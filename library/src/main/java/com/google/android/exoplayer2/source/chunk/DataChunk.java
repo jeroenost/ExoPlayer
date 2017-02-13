@@ -21,6 +21,7 @@ import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
+import com.google.android.exoplayer2.util.Util;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -100,7 +101,7 @@ public abstract class DataChunk extends Chunk {
         consume(data, limit);
       }
     } finally {
-      dataSource.close();
+      Util.closeQuietly(dataSource);
     }
   }
 
