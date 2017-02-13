@@ -43,6 +43,8 @@ import java.io.IOException;
 /* package */ final class ExoPlayerImplInternal implements Handler.Callback,
     MediaPeriod.Callback, TrackSelector.InvalidationListener, MediaSource.Listener {
 
+  private long firstRenderPosition = 0;
+
   /**
    * Playback position information which is read on the application's thread by
    * {@link ExoPlayerImpl} and read/written internally on the player's thread.
@@ -120,7 +122,7 @@ import java.io.IOException;
    * buffering policy normally prevents buffering too far ahead, but the policy could allow too many
    * small periods to be buffered if the period count were not limited.
    */
-  private static final int MAXIMUM_BUFFER_AHEAD_PERIODS = 100;
+  private static final int MAXIMUM_BUFFER_AHEAD_PERIODS = 3;
 
   /**
    * Offset added to all sample timestamps read by renderers to make them non-negative. This is
@@ -1285,13 +1287,18 @@ import java.io.IOException;
   }
 
   private void maybeContinueLoading() {
-    long nextLoadPositionUs = !loadingPeriodHolder.prepared ? 0
-        : loadingPeriodHolder.mediaPeriod.getNextLoadPositionUs();
+    long nextLoadPositionUs = firstRenderPosition + (!loadingPeriodHolder.prepared ? 0
+        : loadingPeriodHolder.mediaPeriod.getNextLoadPositionUs());
     if (nextLoadPositionUs == C.TIME_END_OF_SOURCE) {
       setIsLoading(false);
     } else {
       long loadingPeriodPositionUs = loadingPeriodHolder.toPeriodTime(rendererPositionUs);
+      if (firstRenderPosition == 0 ) {
+        firstRenderPosition = loadingPeriodPositionUs;
+        nextLoadPositionUs+=firstRenderPosition;
+      }
       long bufferedDurationUs = nextLoadPositionUs - loadingPeriodPositionUs;
+      //Log.i(TAG,"Buffered duration: "+bufferedDurationUs);
       boolean continueLoading = loadControl.shouldContinueLoading(bufferedDurationUs);
       setIsLoading(continueLoading);
       if (continueLoading) {
