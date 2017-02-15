@@ -623,7 +623,7 @@ public class PlaybackControlView extends FrameLayout {
     if (fastForwardMs <= 0) {
       return;
     }
-    seekTo(Math.min(player.getCurrentPosition() + fastForwardMs, player.getDuration()));
+    seekTo(player.getCurrentPosition() + fastForwardMs);
   }
 
   private void seekTo(long positionMs) {

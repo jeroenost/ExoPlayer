@@ -15,6 +15,8 @@
  */
 package com.google.android.exoplayer2.source.chunk;
 
+import android.util.Log;
+
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.FormatHolder;
@@ -26,6 +28,7 @@ import com.google.android.exoplayer2.source.SequenceableLoader;
 import com.google.android.exoplayer2.upstream.Allocator;
 import com.google.android.exoplayer2.upstream.Loader;
 import com.google.android.exoplayer2.util.Assertions;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -132,6 +135,7 @@ public class ChunkSampleStream<T extends ChunkSource> implements SampleStream, S
       }
     } else {
       // We failed, and need to restart.
+      Log.i("Exoplayer","Seek outside existing buffer, will redownload.");
       pendingResetPositionUs = positionUs;
       loadingFinished = false;
       mediaChunks.clear();

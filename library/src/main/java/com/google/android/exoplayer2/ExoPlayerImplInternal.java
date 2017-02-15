@@ -43,8 +43,6 @@ import java.io.IOException;
 /* package */ final class ExoPlayerImplInternal implements Handler.Callback,
     MediaPeriod.Callback, TrackSelector.InvalidationListener, MediaSource.Listener {
 
-  private long firstRenderPosition = 0;
-
   /**
    * Playback position information which is read on the application's thread by
    * {@link ExoPlayerImpl} and read/written internally on the player's thread.
@@ -209,6 +207,7 @@ import java.io.IOException;
   }
 
   public void seekTo(Timeline timeline, int windowIndex, long positionUs) {
+    Log.i(TAG,"SEEK TO "+positionUs);
     handler.obtainMessage(MSG_SEEK_TO, new SeekPosition(timeline, windowIndex, positionUs))
         .sendToTarget();
   }
@@ -1287,19 +1286,15 @@ import java.io.IOException;
   }
 
   private void maybeContinueLoading() {
-    long nextLoadPositionUs = firstRenderPosition + (!loadingPeriodHolder.prepared ? 0
+    long nextLoadPositionUs = (!loadingPeriodHolder.prepared ? 0
         : loadingPeriodHolder.mediaPeriod.getNextLoadPositionUs());
     if (nextLoadPositionUs == C.TIME_END_OF_SOURCE) {
       setIsLoading(false);
     } else {
       long loadingPeriodPositionUs = loadingPeriodHolder.toPeriodTime(rendererPositionUs);
-      if (firstRenderPosition == 0 ) {
-        firstRenderPosition = loadingPeriodPositionUs;
-        nextLoadPositionUs+=firstRenderPosition;
-      }
       long bufferedDurationUs = nextLoadPositionUs - loadingPeriodPositionUs;
-      //Log.i(TAG,"Buffered duration: "+bufferedDurationUs);
       boolean continueLoading = loadControl.shouldContinueLoading(bufferedDurationUs);
+      //Log.i(TAG,"Next load: "+nextLoadPositionUs+" Bufd: "+loadingPeriodHolder.mediaPeriod.getBufferedPositionUs()+" Rendered up to: "+loadingPeriodPositionUs+" Buffered duration: "+bufferedDurationUs+" continue "+continueLoading);
       setIsLoading(continueLoading);
       if (continueLoading) {
         loadingPeriodHolder.needsContinueLoading = false;
