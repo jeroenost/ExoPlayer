@@ -2,7 +2,6 @@ package com.google.android.exoplayer2.drm;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.ConditionVariable;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
@@ -15,6 +14,7 @@ import com.google.android.exoplayer2.util.Util;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.android.exoplayer2.drm.DefaultDrmSessionManager.MODE_DOWNLOAD;
 import static com.google.android.exoplayer2.drm.DefaultDrmSessionManager.MODE_QUERY;
@@ -25,7 +25,7 @@ public class CachingDefaultDrmSessionManager<T extends ExoMediaCrypto> implement
     public static final String TAG="CachingDRM";
     private final DefaultDrmSessionManager<T> delegateDefaultDrmSessionManager;
     private final UUID uuid;
-    private final ConditionVariable conditionVariable;
+    private final AtomicBoolean pending = new AtomicBoolean(false);
     private byte[] schemeInitD;
 
     public interface EventListener {
@@ -62,33 +62,31 @@ public class CachingDefaultDrmSessionManager<T extends ExoMediaCrypto> implement
             @Override
             public void onDrmKeysLoaded() {
                 saveDrmKeys();
-                conditionVariable.open();
+                pending.set(false);
                 if (eventListener!=null) eventListener.onDrmKeysLoaded();
             }
 
             @Override
             public void onDrmSessionManagerError(Exception e) {
-                conditionVariable.open();
+                pending.set(false);
                 if (eventListener!=null) eventListener.onDrmSessionManagerError(e);
             }
 
             @Override
             public void onDrmKeysRestored() {
                 saveDrmKeys();
-                conditionVariable.open();
+                pending.set(false);
                 if (eventListener!=null) eventListener.onDrmKeysRestored();
             }
 
             @Override
             public void onDrmKeysRemoved() {
-                conditionVariable.open();
+                pending.set(false);
                 if (eventListener!=null) eventListener.onDrmKeysRemoved();
             }
         };
         delegateDefaultDrmSessionManager = new DefaultDrmSessionManager<T>(uuid, mediaDrm, callback, optionalKeyRequestParameters, eventHandler, eventListenerInternal);
         drmkeys = context.getSharedPreferences("drmkeys", Context.MODE_PRIVATE);
-        conditionVariable = new ConditionVariable();
-        conditionVariable.open();
     }
 
     final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
@@ -114,9 +112,11 @@ public class CachingDefaultDrmSessionManager<T extends ExoMediaCrypto> implement
 
     @Override
     public DrmSession<T> acquireSession(Looper playbackLooper, DrmInitData drmInitData) {
-        conditionVariable.block();
-        conditionVariable.close();
-
+        if (pending.getAndSet(true)) {
+            Log.i(TAG,"Already pending request");
+            return delegateDefaultDrmSessionManager.acquireSession(playbackLooper, drmInitData);
+        }
+        Log.i(TAG,"Request, was not yet pending");
         // First check if we already have this license in local storage and if it's still valid.
         DrmInitData.SchemeData schemeData = drmInitData.get(uuid);
         schemeInitD = schemeData.data;
@@ -143,11 +143,13 @@ public class CachingDefaultDrmSessionManager<T extends ExoMediaCrypto> implement
             delegateDefaultDrmSessionManager.setMode(MODE_DOWNLOAD,null);
         }
         DrmSession<T> tDrmSession = delegateDefaultDrmSessionManager.acquireSession(playbackLooper, drmInitData);
+        Log.i(TAG,"Acquire license request is done");
         return tDrmSession;
     }
 
     @Override
     public void releaseSession(DrmSession<T> drmSession) {
+        pending.set(false);
         delegateDefaultDrmSessionManager.releaseSession(drmSession);
     }
 
