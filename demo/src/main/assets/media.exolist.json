@@ -1,5 +1,114 @@
 [
   {
+    "name": "RBI",
+    "samples": [
+      {
+        "name": "AV sync",
+        "uri": "http://192.168.1.60/t/dash.mpd",
+        "extension": "mpd"
+      },
+      {
+        "name": "AV sync re",
+        "uri": "http://192.168.1.60/t/re/ddiff.mpd",
+        "extension": "mpd"
+      },
+      {
+        "name": "RBI Dash VOD EEN",
+        "uri": "https://4ophy7gax3.execute-api.eu-west-1.amazonaws.com/prod/content?channel=DISCOVERY&time=1483615357&ext=.mpd",
+        "extension": "mpd"
+      },
+      {
+        "name": "RBI Dash Live NED1",
+        "uri": "https://s3-eu-west-1.amazonaws.com/bhaalubilli/c/NED1-live.mpd",
+        "extension": "mpd"
+      },
+      {
+        "name": "RBI Dash Live NED2",
+        "uri": "https://s3-eu-west-1.amazonaws.com/bhaalubilli/c/NED2-live.mpd",
+        "extension": "mpd"
+      },
+      {
+        "name": "RBI Dash Live BBC1 DRM ",
+        "uri": "https://s3-eu-west-1.amazonaws.com/bhaalubilli/c/BBC1-live.mpd",
+        "drm_scheme": "widevine",
+        "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176&CustomDATA=1234",
+        "extension": "mpd"
+      },
+      {
+        "name": "RBI Dash Live BBC WORLD NEWS DRM no servlet",
+        "uri": "https://s3-eu-west-1.amazonaws.com/bhaalubilli/c/BBC_WORLD_NEWS-live.mpd",
+        "drm_scheme": "widevine",
+        "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176&CustomDATA=1234",
+        "extension": "mpd"
+      },
+      {
+        "name": "RBI Dash Live BBC2 DRM ",
+        "uri": "https://zp5ectgw82.execute-api.eu-west-1.amazonaws.com/prod/billitv/play?channel=BBC2&mode=4&time=0",
+        "drm_scheme": "widevine",
+        "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176&customDATA=LETMEPASS",
+        "extension": "mpd"
+      },
+      {
+        "name": "RBI Dash Live BBC2 DRM ",
+        "uri": "https://zp5ectgw82.execute-api.eu-west-1.amazonaws.com/prod/billitv/play?channel=BBC_WORLD_NEWS&mode=4&time=0",
+        "drm_scheme": "widevine",
+        "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176&customDATA=LETMEPASS",
+        "extension": "mpd"
+      },
+      {
+        "name": "RBI Dash VOD BBC2 DRM",
+        "uri": "hhttps://zp5ectgw82.execute-api.eu-west-1.amazonaws.com/prod/billitv/play?c=BBC2&t=",
+        "drm_scheme": "widevine",
+        "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176",
+        "extension": "mpd"
+      },
+      {
+        "name": "RBI Dash Live BBC1 DRM",
+        "uri": "https://s3-eu-west-1.amazonaws.com/bhaalubilli/c/BBC1-live.mpd",
+        "extension": "mpd",
+        "drm_scheme": "widevine",
+        "drm_license_url": " https://widevine-dash.ezdrm.com/proxy?pX=00B176"
+      },
+      {
+        "name": "RBI Dash Live BBC2 DRM",
+        "uri": "https://s3-eu-west-1.amazonaws.com/bhaalubilli/c/BBC2-live.mpd",
+        "extension": "mpd"
+      },
+      {
+        "name": "RBI Dash Live NPO1 WebmVP9 DRM",
+        "uri": "https://s3-eu-west-1.amazonaws.com/bhaalubilli/c/NPO1-live.mpd",
+        "extension": "mpd",
+        "drm_scheme": "widevine",
+        "drm_license_url": " https://widevine-dash.ezdrm.com/proxy?pX=00B176"
+      },
+      {
+        "name": "RBI AV sync + mem leak test",
+        "uri": "https://4ophy7gax3.execute-api.eu-west-1.amazonaws.com/prod/content?channel=DISCOVERY&time=1487170684&ext=.mpd",
+        "extension": "mpd",
+        "drm_scheme": "widevine",
+        "drm_license_url": " https://widevine-dash.ezdrm.com/proxy?pX=00B176"
+      },
+      {
+        "name": "Live test",
+        "uri": "http://irtdashreference-i.akamaihd.net/dash/live/901161/bfs/manifestARD.mpd",
+        "extension": "mpd"
+      },
+      {
+        "name": "RBI Widevine ezdrm test 1",
+        "uri": "https://s3-eu-west-1.amazonaws.com/bhaalubilli/test/stream.mpd",
+        "drm_scheme": "widevine",
+        "drm_license_url": " http://widevine-dash.ezdrm.com/proxy?pX=00B176"
+      },
+      {
+        "name": "RBI Widevine ezdrm test 2",
+        "uri": "https://s3-eu-west-1.amazonaws.com/bhaalubilli/test2/vod.mpd",
+        "drm_scheme": "widevine",
+        "drm_license_url": " http://widevine-dash.ezdrm.com/proxy?pX=00B176"
+      }
+
+
+    ]
+  },{
     "name": "YouTube DASH",
     "samples": [
       {

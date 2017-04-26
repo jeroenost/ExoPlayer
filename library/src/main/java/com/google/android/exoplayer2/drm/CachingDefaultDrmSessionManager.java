@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
+import android.util.Pair;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.extractor.mp4.PsshAtomUtil;
@@ -24,6 +25,7 @@ public class CachingDefaultDrmSessionManager<T extends ExoMediaCrypto> implement
     private final SharedPreferences drmkeys;
     public static final String TAG="CachingDRM";
     private final DefaultDrmSessionManager<T> delegateDefaultDrmSessionManager;
+    private OfflineLicenseHelper<FrameworkMediaCrypto> offlineLicenseHelper;
     private final UUID uuid;
     private final AtomicBoolean pending = new AtomicBoolean(false);
     private byte[] schemeInitD;
@@ -81,12 +83,16 @@ public class CachingDefaultDrmSessionManager<T extends ExoMediaCrypto> implement
 
             @Override
             public void onDrmKeysRemoved() {
-                pending.set(false);
                 if (eventListener!=null) eventListener.onDrmKeysRemoved();
             }
         };
         delegateDefaultDrmSessionManager = new DefaultDrmSessionManager<T>(uuid, mediaDrm, callback, optionalKeyRequestParameters, eventHandler, eventListenerInternal);
         drmkeys = context.getSharedPreferences("drmkeys", Context.MODE_PRIVATE);
+        try {
+            offlineLicenseHelper = OfflineLicenseHelper.newWidevineInstance(callback,optionalKeyRequestParameters );
+        } catch (UnsupportedDrmException e) {
+            Log.e(TAG,"Failed creating offlinelicensehelper.");
+        }
     }
 
     final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
@@ -134,11 +140,38 @@ public class CachingDefaultDrmSessionManager<T extends ExoMediaCrypto> implement
         if (cachedKeySetId!=null) {
             //Load successful.
             Log.i(TAG,"Cached key set found "+bytesToHex(cachedKeySetId));
-            if (!Arrays.equals(delegateDefaultDrmSessionManager.getOfflineLicenseKeySetId(), cachedKeySetId))
-            {
-                delegateDefaultDrmSessionManager.setMode(MODE_QUERY, cachedKeySetId);
+
+            Pair<Long, Long> remainingSec = null;
+            try {
+                remainingSec = offlineLicenseHelper.getLicenseDurationRemainingSec(cachedKeySetId);
+                Log.i(TAG,"Validity: "+remainingSec.first+" sec / "+remainingSec.second+" sec");
+
+                if ((remainingSec.first < 4*60*60 ) || (remainingSec.second<4*60*60)) {
+                    Log.i(TAG,"License should be renewed.");
+                    removeKeySetId(cachedKeySetId);
+                    try {
+                        offlineLicenseHelper.release(cachedKeySetId);
+                    }catch (Exception ignore) {
+                        Log.i(TAG,"Error in releasing expired license. Ignore.");
+                    }
+                    cachedKeySetId=null;
+
+                }
+                else {
+                    if (!Arrays.equals(delegateDefaultDrmSessionManager.getOfflineLicenseKeySetId(), cachedKeySetId))
+                        delegateDefaultDrmSessionManager.setMode(MODE_QUERY, cachedKeySetId);
+
+                }
+            } catch (DrmSession.DrmSessionException e) {
+                Log.e(TAG, "Error renewing drm keys");
+                //TODO ERASE whatever is here.
+                cachedKeySetId = null;
+                removeKeySetId(schemeInitD);
             }
-        } else {
+
+        }
+
+        if (cachedKeySetId==null){
             Log.i(TAG,"No cached key set found ");
             delegateDefaultDrmSessionManager.setMode(MODE_DOWNLOAD,null);
         }
@@ -158,6 +191,12 @@ public class CachingDefaultDrmSessionManager<T extends ExoMediaCrypto> implement
         String encodedKeySetId = Base64.encodeToString(keySetId, Base64.NO_WRAP);
         drmkeys.edit()
                 .putString(encodedInitData, encodedKeySetId)
+                .apply();
+    }
+    public void removeKeySetId (byte[] initData) {
+        String encodedInitData = Base64.encodeToString(initData, Base64.NO_WRAP);
+        drmkeys.edit()
+                .remove(encodedInitData)
                 .apply();
     }
 

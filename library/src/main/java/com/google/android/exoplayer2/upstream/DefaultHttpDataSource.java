@@ -52,11 +52,11 @@ public class DefaultHttpDataSource implements HttpDataSource {
   /**
    * The default connection timeout, in milliseconds.
    */
-  public static final int DEFAULT_CONNECT_TIMEOUT_MILLIS = 8 * 1000;
+  public static final int DEFAULT_CONNECT_TIMEOUT_MILLIS = 30 * 1000;
   /**
    * The default read timeout, in milliseconds.
    */
-  public static final int DEFAULT_READ_TIMEOUT_MILLIS = 8 * 1000;
+  public static final int DEFAULT_READ_TIMEOUT_MILLIS = 30 * 1000;
 
   private static final String TAG = "DefaultHttpDataSource";
   private static final int MAX_REDIRECTS = 20; // Same limit as okhttp.

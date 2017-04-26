@@ -28,6 +28,7 @@ import android.support.annotation.IntDef;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
+
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.drm.DrmInitData.SchemeData;
 import com.google.android.exoplayer2.drm.ExoMediaDrm.KeyRequest;
@@ -36,6 +37,7 @@ import com.google.android.exoplayer2.drm.ExoMediaDrm.ProvisionRequest;
 import com.google.android.exoplayer2.extractor.mp4.PsshAtomUtil;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Util;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
@@ -567,7 +569,12 @@ public class DefaultDrmSessionManager<T extends ExoMediaCrypto> implements DrmSe
             && keySetId != null && keySetId.length != 0) {
           offlineLicenseKeySetId = keySetId;
         }
-        state = STATE_OPENED_WITH_KEYS;
+        Pair<Long, Long> remainingSec =
+                WidevineUtil.getLicenseDurationRemainingSec(this);
+        Log.i(TAG,"Validity: "+remainingSec.first+" sec /"+remainingSec.second+" sec");
+        if ((remainingSec.first > MAX_LICENSE_DURATION_TO_RENEW)&&(remainingSec.second > MAX_LICENSE_DURATION_TO_RENEW)) {
+          state = STATE_OPENED_WITH_KEYS;
+        }
         if (eventHandler != null && eventListener != null) {
           eventHandler.post(new Runnable() {
             @Override
