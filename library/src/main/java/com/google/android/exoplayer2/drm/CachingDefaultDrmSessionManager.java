@@ -29,6 +29,7 @@ public class CachingDefaultDrmSessionManager<T extends ExoMediaCrypto> implement
     private final UUID uuid;
     private final AtomicBoolean pending = new AtomicBoolean(false);
     private byte[] schemeInitD;
+    private boolean disableCaching = false;
 
     public interface EventListener {
 
@@ -116,6 +117,11 @@ public class CachingDefaultDrmSessionManager<T extends ExoMediaCrypto> implement
         }
     }
 
+    // Testing only.
+    public void setDisableCaching(boolean disableCaching) {
+        this.disableCaching=disableCaching;
+    }
+
     @Override
     public DrmSession<T> acquireSession(Looper playbackLooper, DrmInitData drmInitData) {
         if (pending.getAndSet(true)) {
@@ -136,7 +142,7 @@ public class CachingDefaultDrmSessionManager<T extends ExoMediaCrypto> implement
                 schemeInitD = psshData;
             }
         }
-        byte[] cachedKeySetId=loadKeySetId(schemeInitD);
+        byte[] cachedKeySetId=(disableCaching ? null : loadKeySetId(schemeInitD));
         if (cachedKeySetId!=null) {
             //Load successful.
             Log.i(TAG,"Cached key set found "+bytesToHex(cachedKeySetId));

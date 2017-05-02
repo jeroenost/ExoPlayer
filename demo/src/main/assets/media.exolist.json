@@ -56,6 +56,20 @@
         "extension": "mpd"
       },
       {
+        "name": "RBI Dash Live BBC2 fixed time DRM ",
+        "uri": "https://zp5ectgw82.execute-api.eu-west-1.amazonaws.com/prod/billitv/play?channel=BBC2&time=1493229600&ext=.mpd",
+        "drm_scheme": "widevine",
+        "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176&customDATA=LETMEPASS",
+        "extension": "mpd"
+      },
+      {
+        "name": "RBI Dash Live BBC2_WORLD_NEWS fixed time DRM ",
+        "uri": "https://zp5ectgw82.execute-api.eu-west-1.amazonaws.com/prod/billitv/play?channel=BBC_WORLD_NEWS&time=1493229600&ext=.mpd",
+        "drm_scheme": "widevine",
+        "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176&customDATA=LETMEPASS",
+        "extension": "mpd"
+      },
+      {
         "name": "RBI Dash VOD BBC2 DRM",
         "uri": "hhttps://zp5ectgw82.execute-api.eu-west-1.amazonaws.com/prod/billitv/play?c=BBC2&t=",
         "drm_scheme": "widevine",
