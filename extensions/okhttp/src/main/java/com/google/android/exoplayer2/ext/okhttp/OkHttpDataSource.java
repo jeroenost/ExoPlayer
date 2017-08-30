@@ -16,7 +16,10 @@
 package com.google.android.exoplayer2.ext.okhttp;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.ExoPlayerLibraryInfo;
 import com.google.android.exoplayer2.upstream.DataSourceException;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
@@ -27,7 +30,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -44,14 +46,20 @@ import okhttp3.Response;
  */
 public class OkHttpDataSource implements HttpDataSource {
 
+  static {
+    ExoPlayerLibraryInfo.registerModule("goog.exo.okhttp");
+  }
+
   private static final AtomicReference<byte[]> skipBufferReference = new AtomicReference<>();
 
-  private final Call.Factory callFactory;
-  private final String userAgent;
-  private final Predicate<String> contentTypePredicate;
-  private final TransferListener<? super OkHttpDataSource> listener;
-  private final CacheControl cacheControl;
-  private final HashMap<String, String> requestProperties;
+  @NonNull private final Call.Factory callFactory;
+  @NonNull private final RequestProperties requestProperties;
+
+  @Nullable private final String userAgent;
+  @Nullable private final Predicate<String> contentTypePredicate;
+  @Nullable private final TransferListener<? super OkHttpDataSource> listener;
+  @Nullable private final CacheControl cacheControl;
+  @Nullable private final RequestProperties defaultRequestProperties;
 
   private DataSpec dataSpec;
   private Response response;
@@ -67,48 +75,53 @@ public class OkHttpDataSource implements HttpDataSource {
   /**
    * @param callFactory A {@link Call.Factory} (typically an {@link okhttp3.OkHttpClient}) for use
    *     by the source.
-   * @param userAgent The User-Agent string that should be used.
+   * @param userAgent An optional User-Agent string.
    * @param contentTypePredicate An optional {@link Predicate}. If a content type is rejected by the
    *     predicate then a InvalidContentTypeException} is thrown from {@link #open(DataSpec)}.
    */
-  public OkHttpDataSource(Call.Factory callFactory, String userAgent,
-      Predicate<String> contentTypePredicate) {
+  public OkHttpDataSource(@NonNull Call.Factory callFactory, @Nullable String userAgent,
+      @Nullable Predicate<String> contentTypePredicate) {
     this(callFactory, userAgent, contentTypePredicate, null);
   }
 
   /**
    * @param callFactory A {@link Call.Factory} (typically an {@link okhttp3.OkHttpClient}) for use
    *     by the source.
-   * @param userAgent The User-Agent string that should be used.
+   * @param userAgent An optional User-Agent string.
    * @param contentTypePredicate An optional {@link Predicate}. If a content type is rejected by the
    *     predicate then a {@link InvalidContentTypeException} is thrown from
    *     {@link #open(DataSpec)}.
    * @param listener An optional listener.
    */
-  public OkHttpDataSource(Call.Factory callFactory, String userAgent,
-      Predicate<String> contentTypePredicate, TransferListener<? super OkHttpDataSource> listener) {
-    this(callFactory, userAgent, contentTypePredicate, listener, null);
+  public OkHttpDataSource(@NonNull Call.Factory callFactory, @Nullable String userAgent,
+      @Nullable Predicate<String> contentTypePredicate,
+      @Nullable TransferListener<? super OkHttpDataSource> listener) {
+    this(callFactory, userAgent, contentTypePredicate, listener, null, null);
   }
 
   /**
    * @param callFactory A {@link Call.Factory} (typically an {@link okhttp3.OkHttpClient}) for use
    *     by the source.
-   * @param userAgent The User-Agent string that should be used.
+   * @param userAgent An optional User-Agent string.
    * @param contentTypePredicate An optional {@link Predicate}. If a content type is rejected by the
    *     predicate then a {@link InvalidContentTypeException} is thrown from
    *     {@link #open(DataSpec)}.
    * @param listener An optional listener.
    * @param cacheControl An optional {@link CacheControl} for setting the Cache-Control header.
+   * @param defaultRequestProperties The optional default {@link RequestProperties} to be sent to
+   *    the server as HTTP headers on every request.
    */
-  public OkHttpDataSource(Call.Factory callFactory, String userAgent,
-      Predicate<String> contentTypePredicate, TransferListener<? super OkHttpDataSource> listener,
-      CacheControl cacheControl) {
+  public OkHttpDataSource(@NonNull Call.Factory callFactory, @Nullable String userAgent,
+      @Nullable Predicate<String> contentTypePredicate,
+      @Nullable TransferListener<? super OkHttpDataSource> listener,
+      @Nullable CacheControl cacheControl, @Nullable RequestProperties defaultRequestProperties) {
     this.callFactory = Assertions.checkNotNull(callFactory);
-    this.userAgent = Assertions.checkNotEmpty(userAgent);
+    this.userAgent = userAgent;
     this.contentTypePredicate = contentTypePredicate;
     this.listener = listener;
     this.cacheControl = cacheControl;
-    this.requestProperties = new HashMap<>();
+    this.defaultRequestProperties = defaultRequestProperties;
+    this.requestProperties = new RequestProperties();
   }
 
   @Override
@@ -125,24 +138,18 @@ public class OkHttpDataSource implements HttpDataSource {
   public void setRequestProperty(String name, String value) {
     Assertions.checkNotNull(name);
     Assertions.checkNotNull(value);
-    synchronized (requestProperties) {
-      requestProperties.put(name, value);
-    }
+    requestProperties.set(name, value);
   }
 
   @Override
   public void clearRequestProperty(String name) {
     Assertions.checkNotNull(name);
-    synchronized (requestProperties) {
-      requestProperties.remove(name);
-    }
+    requestProperties.remove(name);
   }
 
   @Override
   public void clearAllRequestProperties() {
-    synchronized (requestProperties) {
-      requestProperties.clear();
-    }
+    requestProperties.clear();
   }
 
   @Override
@@ -268,10 +275,13 @@ public class OkHttpDataSource implements HttpDataSource {
     if (cacheControl != null) {
       builder.cacheControl(cacheControl);
     }
-    synchronized (requestProperties) {
-      for (Map.Entry<String, String> property : requestProperties.entrySet()) {
-        builder.addHeader(property.getKey(), property.getValue());
+    if (defaultRequestProperties != null) {
+      for (Map.Entry<String, String> property : defaultRequestProperties.getSnapshot().entrySet()) {
+        builder.header(property.getKey(), property.getValue());
       }
+    }
+    for (Map.Entry<String, String> property : requestProperties.getSnapshot().entrySet()) {
+      builder.header(property.getKey(), property.getValue());
     }
     if (!(position == 0 && length == C.LENGTH_UNSET)) {
       String rangeRequest = "bytes=" + position + "-";
@@ -280,7 +290,10 @@ public class OkHttpDataSource implements HttpDataSource {
       }
       builder.addHeader("Range", rangeRequest);
     }
-    builder.addHeader("User-Agent", userAgent);
+    if (userAgent != null) {
+      builder.addHeader("User-Agent", userAgent);
+    }
+
     if (!allowGzip) {
       builder.addHeader("Accept-Encoding", "identity");
     }

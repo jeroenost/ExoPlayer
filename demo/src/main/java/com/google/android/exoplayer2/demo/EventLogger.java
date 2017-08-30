@@ -20,8 +20,9 @@ import android.util.Log;
 import android.view.Surface;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.RendererCapabilities;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.audio.AudioRendererEventListener;
@@ -54,7 +55,7 @@ import java.util.Locale;
 /**
  * Logs player events using {@link Log}.
  */
-/* package */ final class EventLogger implements ExoPlayer.EventListener,
+/* package */ final class EventLogger implements Player.EventListener,
     AudioRendererEventListener, VideoRendererEventListener, AdaptiveMediaSourceEventListener,
     ExtractorMediaSource.EventListener, CachingDefaultDrmSessionManager.EventListener,
     MetadataRenderer.Output {
@@ -81,7 +82,7 @@ import java.util.Locale;
     startTimeMs = SystemClock.elapsedRealtime();
   }
 
-  // ExoPlayer.EventListener
+  // Player.EventListener
 
   @Override
   public void onLoadingChanged(boolean isLoading) {
@@ -95,15 +96,23 @@ import java.util.Locale;
   }
 
   @Override
+  public void onRepeatModeChanged(@Player.RepeatMode int repeatMode) {
+    Log.d(TAG, "repeatMode [" + getRepeatModeString(repeatMode) + "]");
+  }
+
+  @Override
   public void onPositionDiscontinuity() {
     Log.d(TAG, "positionDiscontinuity");
   }
 
   @Override
+  public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+    Log.d(TAG, "playbackParameters " + String.format(
+        "[speed=%.2f, pitch=%.2f]", playbackParameters.speed, playbackParameters.pitch));
+  }
+
+  @Override
   public void onTimelineChanged(Timeline timeline, Object manifest) {
-    if (timeline == null) {
-      return;
-    }
     int periodCount = timeline.getPeriodCount();
     int windowCount = timeline.getWindowCount();
     Log.d(TAG, "sourceInfo [periodCount=" + periodCount + ", windowCount=" + windowCount);
@@ -272,12 +281,12 @@ import java.util.Locale;
   @Override
   public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees,
       float pixelWidthHeightRatio) {
-    // Do nothing.
+    Log.d(TAG, "videoSizeChanged [" + width + ", " + height + "]");
   }
 
   @Override
   public void onRenderedFirstFrame(Surface surface) {
-    // Do nothing.
+    Log.d(TAG, "renderedFirstFrame [" + surface + "]");
   }
 
   // DefaultDrmSessionManager.EventListener
@@ -403,13 +412,13 @@ import java.util.Locale;
 
   private static String getStateString(int state) {
     switch (state) {
-      case ExoPlayer.STATE_BUFFERING:
+      case Player.STATE_BUFFERING:
         return "B";
-      case ExoPlayer.STATE_ENDED:
+      case Player.STATE_ENDED:
         return "E";
-      case ExoPlayer.STATE_IDLE:
+      case Player.STATE_IDLE:
         return "I";
-      case ExoPlayer.STATE_READY:
+      case Player.STATE_READY:
         return "R";
       default:
         return "?";
@@ -457,4 +466,16 @@ import java.util.Locale;
     return enabled ? "[X]" : "[ ]";
   }
 
+  private static String getRepeatModeString(@Player.RepeatMode int repeatMode) {
+    switch (repeatMode) {
+      case Player.REPEAT_MODE_OFF:
+        return "OFF";
+      case Player.REPEAT_MODE_ONE:
+        return "ONE";
+      case Player.REPEAT_MODE_ALL:
+        return "ALL";
+      default:
+        return "?";
+    }
+  }
 }

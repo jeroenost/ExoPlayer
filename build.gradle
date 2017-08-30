@@ -11,31 +11,39 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 buildscript {
     repositories {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.1'
-        classpath 'com.novoda:bintray-release:0.3.4'
+        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.novoda:bintray-release:0.5.0'
+    }
+    // Workaround for the following test coverage issue. Remove when fixed:
+    // https://code.google.com/p/android/issues/detail?id=226070
+    configurations.all {
+        resolutionStrategy {
+            force 'org.jacoco:org.jacoco.report:0.7.4.201502262128'
+            force 'org.jacoco:org.jacoco.core:0.7.4.201502262128'
+        }
     }
 }
-
 allprojects {
     repositories {
         jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
     }
     project.ext {
-        compileSdkVersion=24
-        targetSdkVersion=24
-        buildToolsVersion='23.0.3'
-        releaseRepoName = 'exoplayer'
-        releaseUserOrg = 'google'
-        releaseGroupId = 'com.google.android.exoplayer'
-        releaseVersion = 'r2.2.0'
-        releaseWebsite = 'https://github.com/google/ExoPlayer'
+        exoplayerPublishEnabled = true
+    }
+    if (it.hasProperty('externalBuildDir')) {
+        if (!new File(externalBuildDir).isAbsolute()) {
+            externalBuildDir = new File(rootDir, externalBuildDir)
+        }
+        buildDir = "${externalBuildDir}/${project.name}"
     }
 }
+
+apply from: 'javadoc_combined.gradle'

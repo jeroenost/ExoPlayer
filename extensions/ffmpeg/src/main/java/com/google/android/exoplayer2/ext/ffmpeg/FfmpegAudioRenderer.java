@@ -19,7 +19,7 @@ import android.os.Handler;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.Format;
-import com.google.android.exoplayer2.audio.AudioCapabilities;
+import com.google.android.exoplayer2.audio.AudioProcessor;
 import com.google.android.exoplayer2.audio.AudioRendererEventListener;
 import com.google.android.exoplayer2.audio.SimpleDecoderAudioRenderer;
 import com.google.android.exoplayer2.drm.ExoMediaCrypto;
@@ -30,7 +30,14 @@ import com.google.android.exoplayer2.util.MimeTypes;
  */
 public final class FfmpegAudioRenderer extends SimpleDecoderAudioRenderer {
 
+  /**
+   * The number of input and output buffers.
+   */
   private static final int NUM_BUFFERS = 16;
+  /**
+   * The initial input buffer size. Input buffers are reallocated dynamically if this value is
+   * insufficient.
+   */
   private static final int INITIAL_INPUT_BUFFER_SIZE = 960 * 6;
 
   private FfmpegDecoder decoder;
@@ -43,21 +50,11 @@ public final class FfmpegAudioRenderer extends SimpleDecoderAudioRenderer {
    * @param eventHandler A handler to use when delivering events to {@code eventListener}. May be
    *     null if delivery of events is not required.
    * @param eventListener A listener of events. May be null if delivery of events is not required.
-   */
-  public FfmpegAudioRenderer(Handler eventHandler, AudioRendererEventListener eventListener) {
-    super(eventHandler, eventListener);
-  }
-
-  /**
-   * @param eventHandler A handler to use when delivering events to {@code eventListener}. May be
-   *     null if delivery of events is not required.
-   * @param eventListener A listener of events. May be null if delivery of events is not required.
-   * @param audioCapabilities The audio capabilities for playback on this device. May be null if the
-   *     default capabilities (no encoded audio passthrough support) should be assumed.
+   * @param audioProcessors Optional {@link AudioProcessor}s that will process audio before output.
    */
   public FfmpegAudioRenderer(Handler eventHandler, AudioRendererEventListener eventListener,
-      AudioCapabilities audioCapabilities) {
-    super(eventHandler, eventListener, audioCapabilities);
+      AudioProcessor... audioProcessors) {
+    super(eventHandler, eventListener, audioProcessors);
   }
 
   @Override

@@ -67,7 +67,7 @@ public final class FlacExtractor implements Extractor {
   @Override
   public void init(ExtractorOutput output) {
     extractorOutput = output;
-    trackOutput = extractorOutput.track(0);
+    trackOutput = extractorOutput.track(0, C.TRACK_TYPE_AUDIO);
     extractorOutput.endTracks();
     try {
       decoderJni = new FlacDecoderJni();
@@ -159,13 +159,17 @@ public final class FlacExtractor implements Extractor {
     if (position == 0) {
       metadataParsed = false;
     }
-    decoderJni.reset(position);
+    if (decoderJni != null) {
+      decoderJni.reset(position);
+    }
   }
 
   @Override
   public void release() {
-    decoderJni.release();
-    decoderJni = null;
+    if (decoderJni != null) {
+      decoderJni.release();
+      decoderJni = null;
+    }
   }
 
 }

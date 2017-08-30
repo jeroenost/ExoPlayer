@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+apply from: '../constants.gradle'
 apply plugin: 'com.android.application'
 
 android {
@@ -33,6 +34,11 @@ android {
         }
     }
 
+    lintOptions {
+        // The demo app does not have translations.
+        disable 'MissingTranslation'
+    }
+
     productFlavors {
         noExtensions
         withExtensions
@@ -40,9 +46,14 @@ android {
 }
 
 dependencies {
-    compile project(':library')
-    withExtensionsCompile project(path: ':extension-ffmpeg')
-    withExtensionsCompile project(path: ':extension-flac')
-    withExtensionsCompile project(path: ':extension-opus')
-    withExtensionsCompile project(path: ':extension-vp9')
+    compile project(modulePrefix + 'library-core')
+    compile project(modulePrefix + 'library-dash')
+    compile project(modulePrefix + 'library-hls')
+    compile project(modulePrefix + 'library-smoothstreaming')
+    compile project(modulePrefix + 'library-ui')
+    withExtensionsCompile project(path: modulePrefix + 'extension-ffmpeg')
+    withExtensionsCompile project(path: modulePrefix + 'extension-flac')
+    withExtensionsCompile project(path: modulePrefix + 'extension-ima')
+    withExtensionsCompile project(path: modulePrefix + 'extension-opus')
+    withExtensionsCompile project(path: modulePrefix + 'extension-vp9')
 }

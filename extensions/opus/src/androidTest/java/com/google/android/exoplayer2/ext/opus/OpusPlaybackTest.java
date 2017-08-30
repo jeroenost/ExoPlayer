@@ -22,6 +22,8 @@ import android.test.InstrumentationTestCase;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.Renderer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.mkv.MatroskaExtractor;
@@ -56,7 +58,7 @@ public class OpusPlaybackTest extends InstrumentationTestCase {
     }
   }
 
-  private static class TestPlaybackThread extends Thread implements ExoPlayer.EventListener {
+  private static class TestPlaybackThread extends Thread implements Player.EventListener {
 
     private final Context context;
     private final Uri uri;
@@ -103,6 +105,11 @@ public class OpusPlaybackTest extends InstrumentationTestCase {
     }
 
     @Override
+    public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+      // Do nothing.
+    }
+
+    @Override
     public void onTimelineChanged(Timeline timeline, Object manifest) {
       // Do nothing.
     }
@@ -114,10 +121,15 @@ public class OpusPlaybackTest extends InstrumentationTestCase {
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-      if (playbackState == ExoPlayer.STATE_ENDED
-          || (playbackState == ExoPlayer.STATE_IDLE && playbackException != null)) {
+      if (playbackState == Player.STATE_ENDED
+          || (playbackState == Player.STATE_IDLE && playbackException != null)) {
         releasePlayerAndQuitLooper();
       }
+    }
+
+    @Override
+    public void onRepeatModeChanged(int repeatMode) {
+      // Do nothing.
     }
 
     private void releasePlayerAndQuitLooper() {
