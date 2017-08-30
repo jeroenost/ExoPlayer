@@ -3,121 +3,112 @@
     "name": "RBI",
     "samples": [
       {
-        "name": "AV sync",
-        "uri": "http://192.168.1.60/t/dash.mpd",
-        "extension": "mpd"
+        "name": "hevc test",
+        "uri": "/sdcard/Movies/TearsOfSteel_720p_h265.mkv",
+        "extension": "mkv"
       },
       {
-        "name": "AV sync re",
-        "uri": "http://192.168.1.60/t/re/ddiff.mpd",
-        "extension": "mpd"
-      },
-      {
-        "name": "RBI Dash VOD EEN",
-        "uri": "https://4ophy7gax3.execute-api.eu-west-1.amazonaws.com/prod/content?channel=DISCOVERY&time=1483615357&ext=.mpd",
-        "extension": "mpd"
-      },
-      {
-        "name": "RBI Dash Live NED1",
-        "uri": "https://s3-eu-west-1.amazonaws.com/bhaalubilli/c/NED1-live.mpd",
-        "extension": "mpd"
-      },
-      {
-        "name": "RBI Dash Live NED2",
-        "uri": "https://s3-eu-west-1.amazonaws.com/bhaalubilli/c/NED2-live.mpd",
-        "extension": "mpd"
-      },
-      {
-        "name": "RBI Dash Live BBC1 DRM ",
-        "uri": "https://s3-eu-west-1.amazonaws.com/bhaalubilli/c/BBC1-live.mpd",
-        "drm_scheme": "widevine",
-        "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176&CustomDATA=1234",
-        "extension": "mpd"
-      },
-      {
-        "name": "RBI Dash Live BBC WORLD NEWS DRM no servlet",
-        "uri": "https://s3-eu-west-1.amazonaws.com/bhaalubilli/c/BBC_WORLD_NEWS-live.mpd",
-        "drm_scheme": "widevine",
-        "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176&CustomDATA=1234",
-        "extension": "mpd"
-      },
-      {
-        "name": "RBI Dash Live BBC2 DRM ",
-        "uri": "https://zp5ectgw82.execute-api.eu-west-1.amazonaws.com/prod/billitv/play?channel=BBC2&mode=4&time=0",
+        "name": "eu west VT4 live DRM",
+        "uri": "https://zp5ectgw82.execute-api.eu-west-1.amazonaws.com/prod/billitv/play?channel=VT4&time=0&billiCache=false&ext=.mpd",
         "drm_scheme": "widevine",
         "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176&customDATA=LETMEPASS",
         "extension": "mpd"
       },
       {
-        "name": "RBI Dash Live BBC2 DRM ",
-        "uri": "https://zp5ectgw82.execute-api.eu-west-1.amazonaws.com/prod/billitv/play?channel=BBC_WORLD_NEWS&mode=4&time=0",
+        "name": "eu west EEN live DRM",
+        "uri": "https://zp5ectgw82.execute-api.eu-west-1.amazonaws.com/prod/billitv/play?channel=EEN&time=0&billiCache=false&ext=.mpd",
         "drm_scheme": "widevine",
         "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176&customDATA=LETMEPASS",
         "extension": "mpd"
       },
       {
-        "name": "RBI Dash Live BBC2 fixed time DRM ",
-        "uri": "https://zp5ectgw82.execute-api.eu-west-1.amazonaws.com/prod/billitv/play?channel=BBC2&time=1493229600&ext=.mpd",
+        "name": "eu central BBC1 VOD noDRM ",
+        "uri": "https://o0n5fost05.execute-api.eu-central-1.amazonaws.com/prod/billitv/play?channel=BBC1&time=1495020535&ext=.mpd",
+        "extension": "mkv"
+      },
+      {
+        "name": "eu central BBC1 VOD noDRM ",
+        "uri": "https://o0n5fost05.execute-api.eu-central-1.amazonaws.com/prod/billitv/play?channel=BBC1&time=1495020535&ext=.mpd",
+        "extension": "mpd"
+      },
+      {
+        "name": "eu central BBC1 Live noDRM ",
+        "uri": "https://o0n5fost05.execute-api.eu-central-1.amazonaws.com/prod/billitv/play?channel=BBC1&time=0&ext=.mpd",
+        "extension": "mpd"
+      },
+      {
+        "name": "eu central BBC2 VOD DRM ",
+        "uri": "https://o0n5fost05.execute-api.eu-central-1.amazonaws.com/prod/billitv/play?channel=BBC2&time=1495020535&ext=.mpd",
         "drm_scheme": "widevine",
         "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176&customDATA=LETMEPASS",
         "extension": "mpd"
       },
       {
-        "name": "RBI Dash Live BBC2_WORLD_NEWS fixed time DRM ",
-        "uri": "https://zp5ectgw82.execute-api.eu-west-1.amazonaws.com/prod/billitv/play?channel=BBC_WORLD_NEWS&time=1493229600&ext=.mpd",
+        "name": "eu central BBC2 live DRM ",
+        "uri": "https://o0n5fost05.execute-api.eu-central-1.amazonaws.com/prod/billitv/play?channel=BBC2&time=0&ext=.mpd",
         "drm_scheme": "widevine",
         "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176&customDATA=LETMEPASS",
         "extension": "mpd"
       },
       {
-        "name": "RBI Dash VOD BBC2 DRM",
-        "uri": "hhttps://zp5ectgw82.execute-api.eu-west-1.amazonaws.com/prod/billitv/play?c=BBC2&t=",
+        "name": "eu central BBC_WORLD_NEWS VOD DRM ",
+        "uri": "https://o0n5fost05.execute-api.eu-central-1.amazonaws.com/prod/billitv/play?channel=BBC_WORLD_NEWS&time=1495020535&ext=.mpd",
         "drm_scheme": "widevine",
-        "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176",
+        "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176&customDATA=LETMEPASS",
         "extension": "mpd"
       },
       {
-        "name": "RBI Dash Live BBC1 DRM",
-        "uri": "https://s3-eu-west-1.amazonaws.com/bhaalubilli/c/BBC1-live.mpd",
-        "extension": "mpd",
+        "name": "eu central BBC_WORLD_NEWS live DRM ",
+        "uri": "https://o0n5fost05.execute-api.eu-central-1.amazonaws.com/prod/billitv/play?channel=BBC_WORLD_NEWS&time=0&ext=.mpd",
         "drm_scheme": "widevine",
-        "drm_license_url": " https://widevine-dash.ezdrm.com/proxy?pX=00B176"
+        "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176&customDATA=LETMEPASS",
+        "extension": "mpd"
       },
+
       {
-        "name": "RBI Dash Live BBC2 DRM",
-        "uri": "https://s3-eu-west-1.amazonaws.com/bhaalubilli/c/BBC2-live.mpd",
+        "name": "eu west BBC1 VOD noDRM ",
+        "uri": "https://zp5ectgw82.execute-api.eu-west-1.amazonaws.com/prod/billitv/play?channel=BBC1&time=1495020535&ext=.mpd",
         "extension": "mpd"
       },
       {
-        "name": "RBI Dash Live NPO1 WebmVP9 DRM",
-        "uri": "https://s3-eu-west-1.amazonaws.com/bhaalubilli/c/NPO1-live.mpd",
-        "extension": "mpd",
-        "drm_scheme": "widevine",
-        "drm_license_url": " https://widevine-dash.ezdrm.com/proxy?pX=00B176"
-      },
-      {
-        "name": "RBI AV sync + mem leak test",
-        "uri": "https://4ophy7gax3.execute-api.eu-west-1.amazonaws.com/prod/content?channel=DISCOVERY&time=1487170684&ext=.mpd",
-        "extension": "mpd",
-        "drm_scheme": "widevine",
-        "drm_license_url": " https://widevine-dash.ezdrm.com/proxy?pX=00B176"
-      },
-      {
-        "name": "Live test",
-        "uri": "http://irtdashreference-i.akamaihd.net/dash/live/901161/bfs/manifestARD.mpd",
+        "name": "eu west BBC1 Live noDRM ",
+        "uri": "https://zp5ectgw82.execute-api.eu-west-1.amazonaws.com/prod/billitv/play?channel=BBC1&time=0&ext=.mpd",
         "extension": "mpd"
       },
       {
-        "name": "RBI Widevine ezdrm test 1",
-        "uri": "https://s3-eu-west-1.amazonaws.com/bhaalubilli/test/stream.mpd",
+        "name": "eu west BBC2 VOD DRM ",
+        "uri": "https://zp5ectgw82.execute-api.eu-west-1.amazonaws.com/prod/billitv/play?channel=BBC2&time=1495020535&ext=.mpd",
         "drm_scheme": "widevine",
-        "drm_license_url": " http://widevine-dash.ezdrm.com/proxy?pX=00B176"
+        "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176&customDATA=LETMEPASS",
+        "extension": "mpd"
       },
       {
-        "name": "RBI Widevine ezdrm test 2",
-        "uri": "https://s3-eu-west-1.amazonaws.com/bhaalubilli/test2/vod.mpd",
+        "name": "eu west BBC2 live DRM ",
+        "uri": "https://zp5ectgw82.execute-api.eu-west-1.amazonaws.com/prod/billitv/play?channel=BBC2&time=0&ext=.mpd",
         "drm_scheme": "widevine",
-        "drm_license_url": " http://widevine-dash.ezdrm.com/proxy?pX=00B176"
+        "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176&customDATA=LETMEPASS",
+        "extension": "mpd"
+      },
+      {
+        "name": "eu west BBC_WORLD_NEWS VOD DRM ",
+        "uri": "https://zp5ectgw82.execute-api.eu-west-1.amazonaws.com/prod/billitv/play?channel=BBC_WORLD_NEWS&time=1495020535&ext=.mpd",
+        "drm_scheme": "widevine",
+        "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176&customDATA=LETMEPASS",
+        "extension": "mpd"
+      },
+      {
+        "name": "eu west BBC_WORLD_NEWS live DRM ",
+        "uri": "https://zp5ectgw82.execute-api.eu-west-1.amazonaws.com/prod/billitv/play?channel=BBC_WORLD_NEWS&time=0&ext=.mpd",
+        "drm_scheme": "widevine",
+        "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176&customDATA=LETMEPASS",
+        "extension": "mpd"
+      },
+      {
+        "name": "eu west DISCOVERY live DRM ",
+        "uri": "https://zp5ectgw82.execute-api.eu-west-1.amazonaws.com/prod/billitv/play?channel=DISCOVERY&time=0&ext=.mpd",
+        "drm_scheme": "widevine",
+        "drm_license_url": "https://widevine-dash.ezdrm.com/proxy?pX=00B176&customDATA=LETMEPASS",
+        "extension": "mpd"
       }
 
 

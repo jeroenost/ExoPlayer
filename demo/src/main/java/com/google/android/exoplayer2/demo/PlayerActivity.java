@@ -381,7 +381,7 @@ public class PlayerActivity extends Activity implements OnClickListener, EventLi
   private DrmSessionManager<FrameworkMediaCrypto> buildDrmSessionManagerV18(UUID uuid,
       String licenseUrl, String[] keyRequestPropertiesArray) throws UnsupportedDrmException {
     HttpMediaDrmCallback drmCallback = new HttpMediaDrmCallback(licenseUrl,
-        buildHttpDataSourceFactory(false), keyRequestProperties);
+        buildHttpDataSourceFactory(false));
     return new CachingDefaultDrmSessionManager<>(this, uuid,
         FrameworkMediaDrm.newInstance(uuid), drmCallback, null, mainHandler, eventLogger);
   }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
@@ -116,7 +117,27 @@ public class CachingDefaultDrmSessionManager<T extends ExoMediaCrypto> implement
             storeKeySetId(schemeInitD, offlineLicenseKeySetId);
         }
     }
+    // DrmSessionManager implementation.
 
+    @Override
+    public boolean canAcquireSession(@NonNull DrmInitData drmInitData) {
+        DrmInitData.SchemeData schemeData = drmInitData.get(uuid);
+        if (schemeData == null) {
+            // No data for this manager's scheme.
+            return false;
+        }
+        String schemeType = schemeData.type;
+        if (schemeType == null || C.CENC_TYPE_cenc.equals(schemeType)) {
+            // If there is no scheme information, assume patternless AES-CTR.
+            return true;
+        } else if (C.CENC_TYPE_cbc1.equals(schemeType) || C.CENC_TYPE_cbcs.equals(schemeType)
+                || C.CENC_TYPE_cens.equals(schemeType)) {
+            // AES-CBC and pattern encryption are supported on API 24 onwards.
+            return Util.SDK_INT >= 24;
+        }
+        // Unknown schemes, assume one of them is supported.
+        return true;
+    }
     // Testing only.
     public void setDisableCaching(boolean disableCaching) {
         this.disableCaching=disableCaching;
@@ -156,7 +177,7 @@ public class CachingDefaultDrmSessionManager<T extends ExoMediaCrypto> implement
                     Log.i(TAG,"License should be renewed.");
                     removeKeySetId(cachedKeySetId);
                     try {
-                        offlineLicenseHelper.release(cachedKeySetId);
+                        offlineLicenseHelper.release();
                     }catch (Exception ignore) {
                         Log.i(TAG,"Error in releasing expired license. Ignore.");
                     }
